@@ -5,7 +5,29 @@ public class PhoneBookContact {
     private String mName;
     private String mPhotoUri;
     private String mEmail;
-    private String mNickName;
+    private String mBirthday;
+    private Integer mId;
+
+    public PhoneBookContact() {
+
+    }
+
+    public PhoneBookContact(String phoneNumber, String name, String photoUri, String email, String birthday, Integer id) {
+        mPhoneNumber = phoneNumber;
+        mName = name;
+        mPhotoUri = photoUri;
+        mEmail = email;
+        mBirthday = birthday;
+        mId = id;
+    }
+
+    public Integer getId() {
+        return mId;
+    }
+
+    public void setId(Integer id) {
+        mId = id;
+    }
 
     public String getBirthday() {
         return mBirthday;
@@ -15,22 +37,12 @@ public class PhoneBookContact {
         mBirthday = birthday;
     }
 
-    private String mBirthday;
-
     public String getEmail() {
         return mEmail;
     }
 
     public void setEmail(String email) {
         mEmail = email;
-    }
-
-    public String getNickName() {
-        return mNickName;
-    }
-
-    public void setNickName(String nickName) {
-        mNickName = nickName;
     }
 
     @Override

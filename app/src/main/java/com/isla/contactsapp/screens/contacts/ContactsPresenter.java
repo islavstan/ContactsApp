@@ -63,6 +63,23 @@ public class ContactsPresenter implements Presenter<ContactsView> {
 
         @Override
         protected List<PhoneBookContact> doInBackground(Void... voids) {
+            List<PhoneBookContact> contactList = getPhoneBookContact();
+            if (contactList != null) {
+                //TODO save list
+                return contactList;
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(List<PhoneBookContact> phoneBookContacts) {
+            super.onPostExecute(phoneBookContacts);
+            mContactsView.hideProgress();
+            mContactsView.onContactLoaded(phoneBookContacts);
+        }
+
+        private List<PhoneBookContact> getPhoneBookContact() {
             ContentResolver cr = ContactsApp.getsInstance().getContentResolver();
             HashMap<Integer, PhoneBookContact> tempContacts = new LinkedHashMap<>();
             Cursor cursor = cr.query(
@@ -97,7 +114,7 @@ public class ContactsPresenter implements Presenter<ContactsView> {
                         mime = cursor.getString(mimePos);
                         // If contact is not yet created
                         if (tempContacts.get(contactId) == null) {
-                            // If type email, add all detail, else add name and photo (we don't need number)
+                            // If type email, add all detail, else add name and photo
                             phoneBookContact = new PhoneBookContact();
                             phoneBookContact.setName(name);
                             phoneBookContact.setPhotoUri(photo);
@@ -126,9 +143,12 @@ public class ContactsPresenter implements Presenter<ContactsView> {
                 }
 
                 List<PhoneBookContact> mContacts = new ArrayList<>();
-                for (Map.Entry<Integer, PhoneBookContact> contact : tempContacts.entrySet()) {
-                    if (!TextUtils.isEmpty(contact.getValue().getBirthday())) {
-                        mContacts.add(contact.getValue());
+                PhoneBookContact contact;
+                for (Map.Entry<Integer, PhoneBookContact> contacts : tempContacts.entrySet()) {
+                    contact = contacts.getValue();
+                    if (!TextUtils.isEmpty(contact.getBirthday())) {
+                        contact.setId(contacts.getKey());
+                        mContacts.add(contact);
                     }
                 }
                 return mContacts;
@@ -136,13 +156,6 @@ public class ContactsPresenter implements Presenter<ContactsView> {
             return null;
         }
 
-
-        @Override
-        protected void onPostExecute(List<PhoneBookContact> phoneBookContacts) {
-            super.onPostExecute(phoneBookContacts);
-            mContactsView.hideProgress();
-            mContactsView.onContactLoaded(phoneBookContacts);
-        }
     }
 
 }
