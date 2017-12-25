@@ -93,9 +93,9 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
             } else {
                 tvEmail.setVisibility(View.GONE);
             }
-            if (!TextUtils.isEmpty(phoneBookContact.getNickName())) {
+            if (!TextUtils.isEmpty(phoneBookContact.getBirthday())) {
                 tvNickName.setVisibility(View.VISIBLE);
-                tvNickName.setText(phoneBookContact.getNickName());
+                tvNickName.setText(phoneBookContact.getBirthday());
             } else {
                 tvNickName.setVisibility(View.GONE);
             }

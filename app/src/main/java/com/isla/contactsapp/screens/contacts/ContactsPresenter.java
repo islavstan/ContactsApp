@@ -10,9 +10,20 @@ import com.isla.contactsapp.ContactsApp;
 import com.isla.contactsapp.base.Presenter;
 import com.isla.contactsapp.models.PhoneBookContact;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ContactsPresenter implements Presenter<ContactsView> {
+    private static final String[] PROJECTION = new String[]{
+            ContactsContract.Data.CONTACT_ID,
+            ContactsContract.Data.DISPLAY_NAME,
+            ContactsContract.Data.DATA1,
+            ContactsContract.Data.PHOTO_URI,
+            ContactsContract.Data.MIMETYPE
+    };
     private ContactsView mContactsView;
 
     @Override
@@ -34,8 +45,9 @@ public class ContactsPresenter implements Presenter<ContactsView> {
 
     }
 
+
     //load contacts from phone book
-    public static class LoadContactsFromPhoneBookTask extends AsyncTask<Void, Void, HashSet<PhoneBookContact>> {
+    public static class LoadContactsFromPhoneBookTask extends AsyncTask<Void, Void, List<PhoneBookContact>> {
         private ContactsView mContactsView;
 
         public LoadContactsFromPhoneBookTask(ContactsView contactsView) {
@@ -50,43 +62,83 @@ public class ContactsPresenter implements Presenter<ContactsView> {
         }
 
         @Override
-        protected HashSet<PhoneBookContact> doInBackground(Void... voids) {
-            HashSet<PhoneBookContact> phoneBookSet = new HashSet<>();
-            ContentResolver contentResolver = ContactsApp.getsInstance().getContentResolver();
-            Cursor ce;
-            Cursor phones = contentResolver.query(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null,
-                    null, null);
-            String name, phoneNumber, imageUri, id;
-            String email = "";
-            String nickName = "";
-            if (phones != null) {
-                while (phones.moveToNext()) {
-                    id = phones.getString(phones.getColumnIndex(ContactsContract.Contacts._ID));
-                    name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                    phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    imageUri = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI));
-                    ce = contentResolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
-                            ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", new String[]{id}, null);
-                    if (ce != null && ce.moveToFirst()) {
-                        email = ce.getString(ce.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-                        //nickName = ce.getString(ce.getColumnIndex(ContactsContract.CommonDataKinds.Nickname.NAME));
-                        ce.close();
+        protected List<PhoneBookContact> doInBackground(Void... voids) {
+            ContentResolver cr = ContactsApp.getsInstance().getContentResolver();
+            HashMap<Integer, PhoneBookContact> tempContacts = new LinkedHashMap<>();
+            Cursor cursor = cr.query(
+                    ContactsContract.Data.CONTENT_URI,
+                    PROJECTION,
+                    ContactsContract.Data.MIMETYPE + " = ?" +
+                            " OR " +
+                            ContactsContract.Data.MIMETYPE + " = ?" +
+                            " OR " +
+                            ContactsContract.Data.MIMETYPE + " = ?",
+                    new String[]{
+                            ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE,
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+                            ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE
+                    },
+                    "lower(" + ContactsContract.Data.DISPLAY_NAME + ")"
+            );
+            if (cursor != null) {
+                try {
+                    final int idPos = cursor.getColumnIndex(ContactsContract.Data.CONTACT_ID);
+                    final int namePos = cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME);
+                    final int photoPos = cursor.getColumnIndex(ContactsContract.Data.PHOTO_URI);
+                    final int emailNoPos = cursor.getColumnIndex(ContactsContract.Data.DATA1);
+                    final int mimePos = cursor.getColumnIndex(ContactsContract.Data.MIMETYPE);
+                    String additionalData, photo, name, mime;
+                    PhoneBookContact phoneBookContact;
+                    while (cursor.moveToNext()) {
+                        int contactId = cursor.getInt(idPos);
+                        additionalData = cursor.getString(emailNoPos);
+                        photo = cursor.getString(photoPos);
+                        name = cursor.getString(namePos);
+                        mime = cursor.getString(mimePos);
+                        // If contact is not yet created
+                        if (tempContacts.get(contactId) == null) {
+                            // If type email, add all detail, else add name and photo (we don't need number)
+                            phoneBookContact = new PhoneBookContact();
+                            phoneBookContact.setName(name);
+                            phoneBookContact.setPhotoUri(photo);
+                            if (mime.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
+                                phoneBookContact.setEmail(additionalData);
+                            } else if (mime.equals(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE)) {
+                                phoneBookContact.setBirthday(additionalData);
+                            } else if (mime.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+                                phoneBookContact.setPhoneNumber(additionalData);
+                            }
+                            tempContacts.put(contactId, phoneBookContact);
+                        } else {
+                            // Contact is already present
+                            // Add email if type email
+                            if (mime.equals(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)) {
+                                tempContacts.get(contactId).setEmail(additionalData);
+                            } else if (mime.equals(ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE)) {
+                                tempContacts.get(contactId).setBirthday(additionalData);
+                            } else if (mime.equals(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
+                                tempContacts.get(contactId).setPhoneNumber(additionalData);
+                            }
+                        }
                     }
-                    PhoneBookContact phoneBookContact = new PhoneBookContact(phoneNumber, name, imageUri, email, nickName);
-                    if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phoneNumber) && phoneNumber.length() > 9) {
-                        phoneBookSet.add(phoneBookContact);
+                } finally {
+                    cursor.close();
+                }
+
+                List<PhoneBookContact> mContacts = new ArrayList<>();
+                for (Map.Entry<Integer, PhoneBookContact> contact : tempContacts.entrySet()) {
+                    if (!TextUtils.isEmpty(contact.getValue().getBirthday())) {
+                        mContacts.add(contact.getValue());
                     }
                 }
-                phones.close();
+                return mContacts;
             }
-
-
-            return phoneBookSet;
+            return null;
         }
 
+
         @Override
-        protected void onPostExecute(HashSet<PhoneBookContact> phoneBookContacts) {
+        protected void onPostExecute(List<PhoneBookContact> phoneBookContacts) {
             super.onPostExecute(phoneBookContacts);
             mContactsView.hideProgress();
             mContactsView.onContactLoaded(phoneBookContacts);

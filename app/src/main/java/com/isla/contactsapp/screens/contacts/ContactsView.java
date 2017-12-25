@@ -3,6 +3,7 @@ package com.isla.contactsapp.screens.contacts;
 import com.isla.contactsapp.models.PhoneBookContact;
 
 import java.util.HashSet;
+import java.util.List;
 
 public interface ContactsView {
 
@@ -10,5 +11,5 @@ public interface ContactsView {
 
     void hideProgress();
 
-    void onContactLoaded(HashSet<PhoneBookContact> phoneBookContacts);
+    void onContactLoaded(List<PhoneBookContact> phoneBookContacts);
 }

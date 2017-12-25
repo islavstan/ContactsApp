@@ -119,7 +119,7 @@ public class ContactsFragment extends BasePresenterFragment<ContactsPresenter, C
     }
 
     @Override
-    public void onContactLoaded(HashSet<PhoneBookContact> phoneBookContacts) {
+    public void onContactLoaded(List<PhoneBookContact> phoneBookContacts) {
         mPhoneBookContactList.clear();
         mPhoneBookContactList.addAll(phoneBookContacts);
         mContactsAdapter.notifyDataSetChanged();

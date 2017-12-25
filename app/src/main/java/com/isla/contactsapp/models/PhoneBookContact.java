@@ -7,13 +7,15 @@ public class PhoneBookContact {
     private String mEmail;
     private String mNickName;
 
-    public PhoneBookContact(String phoneNumber, String name, String photoUri, String email, String nickName) {
-        mPhoneNumber = phoneNumber;
-        mName = name;
-        mPhotoUri = photoUri;
-        mEmail = email;
-        mNickName = nickName;
+    public String getBirthday() {
+        return mBirthday;
     }
+
+    public void setBirthday(String birthday) {
+        mBirthday = birthday;
+    }
+
+    private String mBirthday;
 
     public String getEmail() {
         return mEmail;
