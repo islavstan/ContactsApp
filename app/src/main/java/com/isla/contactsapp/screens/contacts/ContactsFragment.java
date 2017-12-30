@@ -21,7 +21,6 @@ import com.isla.contactsapp.base.PresenterFactory;
 import com.isla.contactsapp.models.PhoneBookContact;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class ContactsFragment extends BasePresenterFragment<ContactsPresenter, ContactsView>
