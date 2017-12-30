@@ -59,7 +59,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         private ImageView ivUserAva;
         private TextView tvUserName;
         private TextView tvNumber;
-        private TextView tvNickName;
+        private TextView tvBirthday;
         private TextView tvEmail;
         private RelativeLayout rlContainer;
 
@@ -68,7 +68,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
             ivUserAva = (ImageView) itemView.findViewById(R.id.ivUserAva);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             tvNumber = (TextView) itemView.findViewById(R.id.tvNumber);
-            tvNickName = (TextView) itemView.findViewById(R.id.tvNickName);
+            tvBirthday = (TextView) itemView.findViewById(R.id.tvBirthday);
             tvEmail = (TextView) itemView.findViewById(R.id.tvEmail);
             rlContainer = (RelativeLayout) itemView.findViewById(R.id.rlContainer);
         }
@@ -85,19 +85,27 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
             } else {
                 ivUserAva.setImageResource(R.drawable.ic_user_placeholder);
             }
-            tvNumber.setText(phoneBookContact.getPhoneNumber());
             tvUserName.setText(phoneBookContact.getName());
+
+            if (!TextUtils.isEmpty(phoneBookContact.getPhoneNumber())) {
+                tvNumber.setVisibility(View.VISIBLE);
+                tvNumber.setText(tvNumber.getContext().getString(R.string.phone, phoneBookContact.getPhoneNumber()));
+            } else {
+                tvNumber.setVisibility(View.GONE);
+            }
+            tvNumber.setText(phoneBookContact.getPhoneNumber());
+
             if (!TextUtils.isEmpty(phoneBookContact.getEmail())) {
                 tvEmail.setVisibility(View.VISIBLE);
-                tvEmail.setText(phoneBookContact.getEmail());
+                tvEmail.setText(tvEmail.getContext().getString(R.string.email, phoneBookContact.getEmail()));
             } else {
                 tvEmail.setVisibility(View.GONE);
             }
             if (!TextUtils.isEmpty(phoneBookContact.getBirthday())) {
-                tvNickName.setVisibility(View.VISIBLE);
-                tvNickName.setText(phoneBookContact.getBirthday());
+                tvBirthday.setVisibility(View.VISIBLE);
+                tvBirthday.setText(tvBirthday.getContext().getString(R.string.birthday, phoneBookContact.getBirthday()));
             } else {
-                tvNickName.setVisibility(View.GONE);
+                tvBirthday.setVisibility(View.GONE);
             }
         }
     }

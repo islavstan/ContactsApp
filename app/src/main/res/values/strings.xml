@@ -2,4 +2,14 @@
     <string name="app_name">ContactsApp</string>
     <string name="contacts_access">accessed</string>
     <string name="contacts_access_error">access denied</string>
+    <string name="phone">phone: %s</string>
+    <string name="email">email: %s</string>
+    <string name="birthday">birthday: %s</string>
+    <string name="birthday_title">Birthday</string>
+    <string name="name">Name</string>
+    <string name="empty_text">Field is empty</string>
+    <string name="email_title">Email</string>
+    <string name="phone_title">Phone</string>
+    <string name="add_birthday_to_calendar">add a birthday to calendar</string>
+    <string name="change_birthday_on_calendar">change birthday on calendar</string>
 </resources>
