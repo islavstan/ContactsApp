@@ -87,7 +87,7 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
         mPermissionHelper.request(new SimplePermissionCallback() {
             @Override
             public void onPermissionGranted() {
-                mDetailPresenter.saveBirthdayEvent();
+                mDetailPresenter.saveBirthdayEvent(mPhoneBookContact.getBirthday(), "др", "др");
             }
         });
     }
@@ -114,7 +114,6 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
     public void onResume() {
         super.onResume();
         mDetailPresenter.getDetailContact(mId);
-        saveBirthdayEvent();
     }
 
     @Override
@@ -148,6 +147,7 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
             GlideUtils.loadCircularImage(ivPhoto, phoneBookContact.getPhotoUri());
             if (!TextUtils.isEmpty(phoneBookContact.getBirthday())) {
                 etBirthday.setText(phoneBookContact.getBirthday());
+                saveBirthdayEvent();
             }
             if (!TextUtils.isEmpty(phoneBookContact.getName())) {
                 toolbar.setTitle(phoneBookContact.getName());
