@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContactsDBHelper extends SQLiteOpenHelper {
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     private static final String DB_NAME = "ContactsAppDB.db";
     private static final String SQL_CREATE_CONTACTS_TABLE =
             "CREATE TABLE " + DatabaseContract.TABLE_CONTACTS + " (" +
@@ -22,7 +22,7 @@ public class ContactsDBHelper extends SQLiteOpenHelper {
                     DatabaseContract.COLUMN_EMAIL + " TEXT, " +
                     DatabaseContract.COLUMN_BIRTHDAY + " TEXT, " +
                     DatabaseContract.COLUMN_PHONENUMBER + " TEXT, " +
-                    DatabaseContract.COLUMN_PHOTO_PATH + " TEXT " +
+                    DatabaseContract.COLUMN_PHOTO_PATH + " TEXT, " +
                     DatabaseContract.COLUMN_EVENT_ID + " INTEGER " +");";
 
     private static ContactsDBHelper sInstance;
@@ -120,7 +120,7 @@ public class ContactsDBHelper extends SQLiteOpenHelper {
             cv.put(DatabaseContract.COLUMN_EMAIL, contact.getEmail());
             cv.put(DatabaseContract.COLUMN_PHOTO_PATH, contact.getPhotoUri());
             cv.put(DatabaseContract.COLUMN_NAME, contact.getName());
-            db.insert(DatabaseContract.TABLE_CONTACTS, null, cv);
+            db.replace(DatabaseContract.TABLE_CONTACTS, null, cv);
         }
     }
 }
