@@ -57,6 +57,7 @@ public class ContactsDBHelper extends SQLiteOpenHelper {
         String photoUri;
         String email;
         String birthday;
+        long eventId;
         int id;
         Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.TABLE_CONTACTS, null);
         if (cursor.moveToFirst()) {
@@ -67,7 +68,8 @@ public class ContactsDBHelper extends SQLiteOpenHelper {
                 email = cursor.getString(cursor.getColumnIndex(DatabaseContract.COLUMN_EMAIL));
                 birthday = cursor.getString(cursor.getColumnIndex(DatabaseContract.COLUMN_BIRTHDAY));
                 id = cursor.getInt(cursor.getColumnIndex(DatabaseContract._ID));
-                contactList.add(new PhoneBookContact(phoneNumber, name, photoUri, email, birthday, id));
+                eventId = cursor.getLong(cursor.getColumnIndex(DatabaseContract.COLUMN_EVENT_ID));
+                contactList.add(new PhoneBookContact(phoneNumber, name, photoUri, email, birthday, id, eventId));
 
             } while (cursor.moveToNext());
         }
@@ -84,6 +86,7 @@ public class ContactsDBHelper extends SQLiteOpenHelper {
         String email;
         String birthday;
         int contactId;
+        long eventId;
         Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseContract.TABLE_CONTACTS +
                 " where " + DatabaseContract._ID + " = " + id, null);
         if (cursor.moveToNext()) {
@@ -93,10 +96,18 @@ public class ContactsDBHelper extends SQLiteOpenHelper {
             email = cursor.getString(cursor.getColumnIndex(DatabaseContract.COLUMN_EMAIL));
             birthday = cursor.getString(cursor.getColumnIndex(DatabaseContract.COLUMN_BIRTHDAY));
             contactId = cursor.getInt(cursor.getColumnIndex(DatabaseContract._ID));
-            contact = new PhoneBookContact(phoneNumber, name, photoUri, email, birthday, contactId);
+            eventId = cursor.getLong(cursor.getColumnIndex(DatabaseContract.COLUMN_EVENT_ID));
+            contact = new PhoneBookContact(phoneNumber, name, photoUri, email, birthday, contactId, eventId);
         }
         cursor.close();
         return contact;
+    }
+
+    public void saveEvent(int contactId, long eventId) {
+        ContentValues cv = new ContentValues();
+        SQLiteDatabase db = getWritableDatabase();
+        cv.put(DatabaseContract.COLUMN_EVENT_ID, eventId);
+        db.update(DatabaseContract.TABLE_CONTACTS, cv, DatabaseContract._ID + " = ?", new String[]{String.valueOf(contactId)});
     }
 
     public void saveAllContacts(List<PhoneBookContact> list) {

@@ -7,18 +7,28 @@ public class PhoneBookContact {
     private String mEmail;
     private String mBirthday;
     private Integer mId;
+    private Long mEventId;
 
     public PhoneBookContact() {
 
     }
 
-    public PhoneBookContact(String phoneNumber, String name, String photoUri, String email, String birthday, Integer id) {
+    public PhoneBookContact(String phoneNumber, String name, String photoUri, String email, String birthday, Integer id, long eventId) {
         mPhoneNumber = phoneNumber;
         mName = name;
         mPhotoUri = photoUri;
         mEmail = email;
         mBirthday = birthday;
         mId = id;
+        mEventId = eventId;
+    }
+
+    public Long getEventId() {
+        return mEventId;
+    }
+
+    public void setEventId(Long eventId) {
+        mEventId = eventId;
     }
 
     public Integer getId() {

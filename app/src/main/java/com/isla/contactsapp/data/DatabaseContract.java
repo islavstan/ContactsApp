@@ -9,4 +9,5 @@ public interface DatabaseContract extends BaseColumns {
     String COLUMN_EMAIL = "email";
     String COLUMN_BIRTHDAY = "birthday";
     String COLUMN_PHOTO_PATH = "photopath";
+    String COLUMN_EVENT_ID = "event_id";
 }
