@@ -1,6 +1,5 @@
-package com.isla.contactsapp.screens;
+package com.isla.contactsapp;
 
-import com.isla.contactsapp.MainPresenter;
 import com.isla.contactsapp.base.PresenterFactory;
 
 public class MainPresenterFactory implements PresenterFactory<MainPresenter> {

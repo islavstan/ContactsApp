@@ -9,7 +9,6 @@ import android.widget.FrameLayout;
 
 import com.isla.contactsapp.base.BasePresenterActivity;
 import com.isla.contactsapp.base.PresenterFactory;
-import com.isla.contactsapp.screens.MainPresenterFactory;
 import com.isla.contactsapp.screens.contacts.ContactsFragment;
 import com.isla.contactsapp.screens.detail.DetailFragment;
 
