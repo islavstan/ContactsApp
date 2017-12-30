@@ -1,5 +1,6 @@
 package com.isla.contactsapp.screens.detail;
 
+import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +21,8 @@ import com.isla.contactsapp.base.BasePresenterFragment;
 import com.isla.contactsapp.base.PresenterFactory;
 import com.isla.contactsapp.models.PhoneBookContact;
 import com.isla.contactsapp.utils.GlideUtils;
+import com.isla.contactsapp.utils.SimplePermissionCallback;
+import com.master.permissionhelper.PermissionHelper;
 
 public class DetailFragment extends BasePresenterFragment<DetailPresenter, DetailView>
         implements DetailView {
@@ -34,6 +37,7 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
     private EditText etEmail;
     private PhoneBookContact mPhoneBookContact;
     private ImageView ivPhoto;
+    private PermissionHelper mPermissionHelper;
 
     public static DetailFragment newInstance(int id) {
         Bundle args = new Bundle();
@@ -77,6 +81,24 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
 
     }
 
+    private void saveBirthdayEvent() {
+        mPermissionHelper = new PermissionHelper(this, new String[]{Manifest.permission.READ_CALENDAR,
+                Manifest.permission.WRITE_CALENDAR}, 100);
+        mPermissionHelper.request(new SimplePermissionCallback() {
+            @Override
+            public void onPermissionGranted() {
+                mDetailPresenter.saveBirthdayEvent();
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (mPermissionHelper != null) {
+            mPermissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 
     private void blockAllFields(@NonNull EditText... editTexts) {
         for (EditText editText : editTexts) {
@@ -92,6 +114,7 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
     public void onResume() {
         super.onResume();
         mDetailPresenter.getDetailContact(mId);
+        saveBirthdayEvent();
     }
 
     @Override

@@ -23,7 +23,7 @@ public class ContactsDBHelper extends SQLiteOpenHelper {
                     DatabaseContract.COLUMN_BIRTHDAY + " TEXT, " +
                     DatabaseContract.COLUMN_PHONENUMBER + " TEXT, " +
                     DatabaseContract.COLUMN_PHOTO_PATH + " TEXT " +
-                    ");";
+                    DatabaseContract.COLUMN_EVENT_ID + " INTEGER " +");";
 
     private static ContactsDBHelper sInstance;
 
