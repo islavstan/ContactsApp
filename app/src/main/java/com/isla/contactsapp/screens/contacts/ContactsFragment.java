@@ -143,6 +143,8 @@ public class ContactsFragment extends BasePresenterFragment<ContactsPresenter, C
 
     @Override
     public void onContactClicked(PhoneBookContact contact) {
-
+        if (contact.getId() != null && mMainView != null) {
+            mMainView.showDetailScreen(contact.getId());
+        }
     }
 }

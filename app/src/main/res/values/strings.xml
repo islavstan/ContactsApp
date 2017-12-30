@@ -10,6 +10,7 @@
     <string name="empty_text">Field is empty</string>
     <string name="email_title">Email</string>
     <string name="phone_title">Phone</string>
+    <string name="contacts">Contacts</string>
     <string name="add_birthday_to_calendar">add a birthday to calendar</string>
     <string name="change_birthday_on_calendar">change birthday on calendar</string>
 </resources>

@@ -11,6 +11,7 @@ import com.isla.contactsapp.base.BasePresenterActivity;
 import com.isla.contactsapp.base.PresenterFactory;
 import com.isla.contactsapp.screens.MainPresenterFactory;
 import com.isla.contactsapp.screens.contacts.ContactsFragment;
+import com.isla.contactsapp.screens.detail.DetailFragment;
 
 public class MainActivity extends BasePresenterActivity<MainPresenter, MainView> implements MainView {
     private MainPresenter mPresenter;
@@ -56,6 +57,11 @@ public class MainActivity extends BasePresenterActivity<MainPresenter, MainView>
     @Override
     public void showContactsScreen() {
         replaceFragment(ContactsFragment.newInstance(), false);
+    }
+
+    @Override
+    public void showDetailScreen(int id) {
+        replaceFragment(DetailFragment.newInstance(id), true);
     }
 
     @Override

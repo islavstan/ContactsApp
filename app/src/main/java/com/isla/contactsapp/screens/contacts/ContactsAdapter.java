@@ -93,7 +93,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
             } else {
                 tvNumber.setVisibility(View.GONE);
             }
-            tvNumber.setText(phoneBookContact.getPhoneNumber());
 
             if (!TextUtils.isEmpty(phoneBookContact.getEmail())) {
                 tvEmail.setVisibility(View.VISIBLE);
