@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -38,6 +39,7 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
     private PhoneBookContact mPhoneBookContact;
     private ImageView ivPhoto;
     private PermissionHelper mPermissionHelper;
+    private Button bAddBirthday;
 
     public static DetailFragment newInstance(int id) {
         Bundle args = new Bundle();
@@ -77,19 +79,67 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
         etEmail = (EditText) view.findViewById(R.id.etEmail);
         etBirthday = (EditText) view.findViewById(R.id.etBirthday);
         ivPhoto = (ImageView) view.findViewById(R.id.ivPhoto);
+        bAddBirthday = (Button) view.findViewById(R.id.bAddBirthday);
         blockAllFields(etFio, etPhone, etEmail, etBirthday);
+        bAddBirthday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mPhoneBookContact != null) {
+                    if (mPhoneBookContact.getEventId() != null) {
+                        showChangeBirthdayDialog();
+                    } else {
+                        showAddBirthdayDialog();
+                    }
+                }
+            }
+        });
+    }
+
+    private void showAddBirthdayDialog() {
 
     }
 
-    private void saveBirthdayEvent() {
-        mPermissionHelper = new PermissionHelper(this, new String[]{Manifest.permission.READ_CALENDAR,
-                Manifest.permission.WRITE_CALENDAR}, 100);
-        mPermissionHelper.request(new SimplePermissionCallback() {
-            @Override
-            public void onPermissionGranted() {
-                mDetailPresenter.saveBirthdayEvent(mPhoneBookContact.getBirthday(), "др", "др");
-            }
-        });
+    private void showChangeBirthdayDialog() {
+
+    }
+
+    private void saveBirthdayEvent(final String title, final String description) {
+        if (mPhoneBookContact != null) {
+            mPermissionHelper = new PermissionHelper(this, new String[]{Manifest.permission.READ_CALENDAR,
+                    Manifest.permission.WRITE_CALENDAR}, 100);
+            mPermissionHelper.request(new SimplePermissionCallback() {
+                @Override
+                public void onPermissionGranted() {
+                    mDetailPresenter.saveBirthdayEvent(mPhoneBookContact.getBirthday(), title, description, mPhoneBookContact.getId());
+                }
+            });
+        }
+    }
+
+    private void deleteBirthdayEvent(final long eventId) {
+        if (mPhoneBookContact != null) {
+            mPermissionHelper = new PermissionHelper(this, new String[]{Manifest.permission.READ_CALENDAR,
+                    Manifest.permission.WRITE_CALENDAR}, 100);
+            mPermissionHelper.request(new SimplePermissionCallback() {
+                @Override
+                public void onPermissionGranted() {
+                    mDetailPresenter.deleteBirthdayEvent(eventId);
+                }
+            });
+        }
+    }
+
+    private void changeBirthdayEvent(final long eventId, final String title, final String description) {
+        if (mPhoneBookContact != null) {
+            mPermissionHelper = new PermissionHelper(this, new String[]{Manifest.permission.READ_CALENDAR,
+                    Manifest.permission.WRITE_CALENDAR}, 100);
+            mPermissionHelper.request(new SimplePermissionCallback() {
+                @Override
+                public void onPermissionGranted() {
+                    mDetailPresenter.changeBirthdayEvent(title, description, eventId);
+                }
+            });
+        }
     }
 
     @Override
@@ -147,7 +197,6 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
             GlideUtils.loadCircularImage(ivPhoto, phoneBookContact.getPhotoUri());
             if (!TextUtils.isEmpty(phoneBookContact.getBirthday())) {
                 etBirthday.setText(phoneBookContact.getBirthday());
-                saveBirthdayEvent();
             }
             if (!TextUtils.isEmpty(phoneBookContact.getName())) {
                 toolbar.setTitle(phoneBookContact.getName());
@@ -159,6 +208,28 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
             if (!TextUtils.isEmpty(phoneBookContact.getEmail())) {
                 etEmail.setText(phoneBookContact.getEmail());
             }
+            if (phoneBookContact.getEventId() != null) {
+                bAddBirthday.setText(R.string.change_birthday_on_calendar);
+            } else {
+                bAddBirthday.setText(R.string.add_birthday_to_calendar);
+            }
+
+        }
+    }
+
+    @Override
+    public void onSaveEvent(Long eventId) {
+        if (mPhoneBookContact != null && eventId != null) {
+            mPhoneBookContact.setEventId(eventId);
+            bAddBirthday.setText(R.string.change_birthday_on_calendar);
+        }
+    }
+
+    @Override
+    public void onDeleteEventSuccess() {
+        if (mPhoneBookContact != null) {
+            mPhoneBookContact.setEventId(null);
+            bAddBirthday.setText(R.string.add_birthday_to_calendar);
         }
     }
 

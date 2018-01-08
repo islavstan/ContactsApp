@@ -8,4 +8,8 @@ public interface DetailView {
     void hideProgress();
 
     void onContactLoaded(PhoneBookContact phoneBookContacts);
+
+    void onSaveEvent(Long eventId);
+
+    void onDeleteEventSuccess();
 }
