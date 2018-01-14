@@ -2,9 +2,11 @@ package com.isla.contactsapp.screens.detail;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.isla.contactsapp.MainView;
 import com.isla.contactsapp.R;
@@ -86,7 +89,9 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
             public void onClick(View v) {
                 if (mPhoneBookContact != null) {
                     if (mPhoneBookContact.getEventId() != null) {
-                        showChangeBirthdayDialog();
+                        //TODO get event from calendar and
+                        // showChangeBirthdayDialog(String title, String description) with title and desc
+                        mDetailPresenter.getEventTitleAndDescription(mPhoneBookContact.getEventId());
                     } else {
                         showAddBirthdayDialog();
                     }
@@ -96,12 +101,76 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
     }
 
     private void showAddBirthdayDialog() {
-
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        View promptView = layoutInflater.inflate(R.layout.dialog_event, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setView(promptView);
+        final EditText etTitle = (EditText) promptView.findViewById(R.id.etTitle);
+        final EditText etDescription = (EditText) promptView.findViewById(R.id.etDescription);
+        alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TextUtils.isEmpty(getText(etTitle)) &&
+                        !TextUtils.isEmpty(getText(etDescription))) {
+                    saveBirthdayEvent(getText(etTitle), getText(etDescription));
+                } else {
+                    Toast.makeText(getContext(), R.string.fields_is_empty, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.setCancelable(false);
+        alert.show();
     }
 
-    private void showChangeBirthdayDialog() {
-
+    private String getText(EditText editText) {
+        return editText.getText().toString().trim();
     }
+
+    @Override
+    public void showChangeBirthdayDialog(String title, String description) {
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        View promptView = layoutInflater.inflate(R.layout.dialog_event, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setView(promptView);
+        final EditText etTitle = (EditText) promptView.findViewById(R.id.etTitle);
+        final EditText etDescription = (EditText) promptView.findViewById(R.id.etDescription);
+        etTitle.setText(title);
+        etDescription.setText(description);
+        final Button bRemove = (Button) promptView.findViewById(R.id.bRemove);
+        bRemove.setVisibility(View.VISIBLE);
+        bRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteBirthdayEvent(mPhoneBookContact.getEventId());
+            }
+        });
+        alertDialogBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TextUtils.isEmpty(getText(etTitle)) &&
+                        !TextUtils.isEmpty(getText(etDescription))) {
+                    saveBirthdayEvent(getText(etTitle), getText(etDescription));
+                } else {
+                    Toast.makeText(getContext(), R.string.fields_is_empty, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.setCancelable(false);
+        alert.show();
+    }
+
 
     private void saveBirthdayEvent(final String title, final String description) {
         if (mPhoneBookContact != null) {
@@ -189,7 +258,6 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onContactLoaded(PhoneBookContact phoneBookContact) {
         if (phoneBookContact != null) {
@@ -213,7 +281,6 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
             } else {
                 bAddBirthday.setText(R.string.add_birthday_to_calendar);
             }
-
         }
     }
 

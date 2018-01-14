@@ -12,4 +12,6 @@ public interface DetailView {
     void onSaveEvent(Long eventId);
 
     void onDeleteEventSuccess();
+
+    void showChangeBirthdayDialog(String title, String description);
 }
