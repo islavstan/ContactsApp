@@ -79,7 +79,7 @@ public class SaveContactBirthdayEventTask extends AsyncTask<Void, Void, Long> {
                 ContactsDBHelper.getInstance().saveEvent(contactId, eventId);
             }
         } catch (ParseException e) {
-            Log.d("stas", e.getMessage());
+            Log.d("tag", e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }

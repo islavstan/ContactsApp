@@ -23,7 +23,7 @@ public class ContactsDBHelper extends SQLiteOpenHelper {
                     DatabaseContract.COLUMN_BIRTHDAY + " TEXT, " +
                     DatabaseContract.COLUMN_PHONENUMBER + " TEXT, " +
                     DatabaseContract.COLUMN_PHOTO_PATH + " TEXT, " +
-                    DatabaseContract.COLUMN_EVENT_ID + " INTEGER " +");";
+                    DatabaseContract.COLUMN_EVENT_ID + " INTEGER " + ");";
 
     private static ContactsDBHelper sInstance;
 
@@ -76,6 +76,17 @@ public class ContactsDBHelper extends SQLiteOpenHelper {
         cursor.close();
         return contactList;
     }
+
+
+    public int getContactsCount() {
+        String countQuery = "SELECT  * FROM " + DatabaseContract.TABLE_CONTACTS;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
+
 
     public PhoneBookContact getDetailContact(int id) {
         SQLiteDatabase db = getReadableDatabase();

@@ -29,7 +29,12 @@ public class LoadContactsFromPhoneBookTask extends AsyncTask<Void, Void, List<Ph
     protected List<PhoneBookContact> doInBackground(Void... voids) {
         List<PhoneBookContact> contactList = getPhoneBookContact();
         if (contactList != null) {
-            ContactsDBHelper.getInstance().saveAllContacts(contactList);
+            int existsContactListSize = ContactsDBHelper.getInstance().getContactsCount();
+            if (existsContactListSize != contactList.size()) {
+                ContactsDBHelper.getInstance().saveAllContacts(contactList);
+            } else {
+                return ContactsDBHelper.getInstance().getAllContacts();
+            }
             return contactList;
         }
         return null;

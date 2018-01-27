@@ -88,10 +88,8 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
             @Override
             public void onClick(View v) {
                 if (mPhoneBookContact != null) {
-                    if (mPhoneBookContact.getEventId() != null) {
-                        //TODO get event from calendar and
-                        // showChangeBirthdayDialog(String title, String description) with title and desc
-                        mDetailPresenter.getEventTitleAndDescription(mPhoneBookContact.getEventId());
+                    if (mPhoneBookContact.getEventId() != null && mPhoneBookContact.getEventId() != 0) {
+                        getEventTitleAndDescription(mPhoneBookContact.getEventId());
                     } else {
                         showAddBirthdayDialog();
                     }
@@ -155,7 +153,7 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
             public void onClick(DialogInterface dialog, int which) {
                 if (!TextUtils.isEmpty(getText(etTitle)) &&
                         !TextUtils.isEmpty(getText(etDescription))) {
-                    saveBirthdayEvent(getText(etTitle), getText(etDescription));
+                    changeBirthdayEvent(mPhoneBookContact.getEventId(), getText(etTitle), getText(etDescription));
                 } else {
                     Toast.makeText(getContext(), R.string.fields_is_empty, Toast.LENGTH_SHORT).show();
                 }
@@ -166,9 +164,16 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
                 dialog.cancel();
             }
         });
-        AlertDialog alert = alertDialogBuilder.create();
+        final AlertDialog alert = alertDialogBuilder.create();
         alert.setCancelable(false);
         alert.show();
+        bRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteBirthdayEvent(mPhoneBookContact.getEventId());
+                alert.dismiss();
+            }
+        });
     }
 
 
@@ -192,10 +197,21 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
             mPermissionHelper.request(new SimplePermissionCallback() {
                 @Override
                 public void onPermissionGranted() {
-                    mDetailPresenter.deleteBirthdayEvent(eventId);
+                    mDetailPresenter.deleteBirthdayEvent(eventId, mPhoneBookContact.getId());
                 }
             });
         }
+    }
+
+    private void getEventTitleAndDescription(final long eventId) {
+        mPermissionHelper = new PermissionHelper(this, new String[]{Manifest.permission.READ_CALENDAR,
+                Manifest.permission.WRITE_CALENDAR}, 100);
+        mPermissionHelper.request(new SimplePermissionCallback() {
+            @Override
+            public void onPermissionGranted() {
+                mDetailPresenter.getEventTitleAndDescription(eventId);
+            }
+        });
     }
 
     private void changeBirthdayEvent(final long eventId, final String title, final String description) {
@@ -276,7 +292,7 @@ public class DetailFragment extends BasePresenterFragment<DetailPresenter, Detai
             if (!TextUtils.isEmpty(phoneBookContact.getEmail())) {
                 etEmail.setText(phoneBookContact.getEmail());
             }
-            if (phoneBookContact.getEventId() != null) {
+            if (phoneBookContact.getEventId() != null && phoneBookContact.getEventId() != 0) {
                 bAddBirthday.setText(R.string.change_birthday_on_calendar);
             } else {
                 bAddBirthday.setText(R.string.add_birthday_to_calendar);

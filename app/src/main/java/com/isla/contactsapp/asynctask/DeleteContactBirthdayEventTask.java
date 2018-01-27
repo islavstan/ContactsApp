@@ -7,15 +7,18 @@ import android.os.AsyncTask;
 import android.provider.CalendarContract;
 
 import com.isla.contactsapp.ContactsApp;
+import com.isla.contactsapp.data.ContactsDBHelper;
 import com.isla.contactsapp.screens.detail.DetailView;
 
 public class DeleteContactBirthdayEventTask extends AsyncTask<Void, Void, Void> {
     private DetailView mDetailView;
     private long mEventId;
+    private int mContatId;
 
-    public DeleteContactBirthdayEventTask(DetailView detailView, long eventId) {
+    public DeleteContactBirthdayEventTask(DetailView detailView, long eventId, int contactId) {
         mDetailView = detailView;
         mEventId = eventId;
+        mContatId = contactId;
     }
 
     @Override
@@ -42,5 +45,6 @@ public class DeleteContactBirthdayEventTask extends AsyncTask<Void, Void, Void> 
         ContentResolver cr = ContactsApp.getsInstance().getContentResolver();
         Uri deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId);
         cr.delete(deleteUri, null, null);
+        ContactsDBHelper.getInstance().saveEvent(mContatId, 0);
     }
 }

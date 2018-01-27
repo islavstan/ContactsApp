@@ -16,7 +16,7 @@ public class CalendarHelper {
     };
 
     private static final String[] INSTANCE_PROJECTION = new String[]{
-            CalendarContract.Instances.EVENT_ID,      // 0
+            CalendarContract.Instances._ID,      // 0
             CalendarContract.Instances.DESCRIPTION,         // 1
             CalendarContract.Instances.TITLE          // 2
     };
@@ -38,7 +38,8 @@ public class CalendarHelper {
                 .getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, CalendarContract.Calendars.VISIBLE + " = 1 AND "
                         + CalendarContract.Calendars.IS_PRIMARY + "=1", null, CalendarContract.Calendars._ID + " ASC");
         if (calCursor != null && calCursor.getCount() <= 0) {
-            calCursor = ContactsApp.getsInstance().getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, CalendarContract.Calendars.VISIBLE + " = 1", null, CalendarContract.Calendars._ID + " ASC");
+            calCursor = ContactsApp.getsInstance().getContentResolver().query(CalendarContract.Calendars.CONTENT_URI,
+                    EVENT_PROJECTION, CalendarContract.Calendars.VISIBLE + " = 1", null, CalendarContract.Calendars._ID + " ASC");
         }
         if (calCursor != null && calCursor.moveToFirst()) {
             calendarId = calCursor.getLong(PROJECTION_ID_INDEX);
@@ -55,9 +56,9 @@ public class CalendarHelper {
         String description = null;
         // The ID of the recurring event whose instances you are searching
 // for in the Instances table
-        String selection = CalendarContract.Instances.EVENT_ID + " = ?";
+        String selection = CalendarContract.Instances._ID + " = ?";
         String[] selectionArgs = new String[]{eventId.toString()};
-        Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
+        Uri.Builder builder = CalendarContract.Events.CONTENT_URI.buildUpon();
         cur = cr.query(builder.build(),
                 INSTANCE_PROJECTION,
                 selection,

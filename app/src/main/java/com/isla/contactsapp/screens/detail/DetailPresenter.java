@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.isla.contactsapp.asynctask.ChangeContactBirthdayEventTask;
 import com.isla.contactsapp.asynctask.DeleteContactBirthdayEventTask;
 import com.isla.contactsapp.asynctask.LoadContactsFromDBTask;
+import com.isla.contactsapp.asynctask.LoadEventDescriptionTask;
 import com.isla.contactsapp.asynctask.SaveContactBirthdayEventTask;
 import com.isla.contactsapp.base.Presenter;
 import com.isla.contactsapp.utils.CalendarHelper;
@@ -27,14 +28,12 @@ public class DetailPresenter implements Presenter<DetailView> {
         new SaveContactBirthdayEventTask(mDetailView, birthday, title, description, contactId).execute();
     }
 
-    void deleteBirthdayEvent(long eventId) {
-        new DeleteContactBirthdayEventTask(mDetailView, eventId).execute();
+    void deleteBirthdayEvent(long eventId, int contactId) {
+        new DeleteContactBirthdayEventTask(mDetailView, eventId, contactId).execute();
     }
 
     void getEventTitleAndDescription(Long eventId) {
-        //todo make async
-        Pair<String, String> pair = CalendarHelper.getTitleAndDescription(eventId);
-        mDetailView.showChangeBirthdayDialog(pair.first, pair.second);
+        new LoadEventDescriptionTask(mDetailView, eventId).execute();
     }
 
     void changeBirthdayEvent(String title, String description, long eventId) {
